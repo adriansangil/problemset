@@ -14,15 +14,12 @@ class ResourceManager {
 		this.resources = [];
 
 	}
-
-	test(){
-		console.log("test");
-	}
-
 	
 	borrow(callback){
 		var resource;
 		var self = this;
+
+		//check if pool has zero resources
 		if(this.resources.length == 0){
 			resource = new Resource();
 			this.resources.push(resource);
@@ -31,23 +28,26 @@ class ResourceManager {
 		} else if(this.resources.length < this.count) {
 
 			for(var i=0; i<this.resources.length;i++){
+				//check if pool has a resource and is not borrowed
 				if(this.resources[i].borrowed == false){
 					
 					resource = this.resources[i];
-					resource.borrowed = true;
-					callback(resource);
 					break;
 				}
 			}
-			 
+			
+			//if all resources from pool are borrowed but pool can still create a new resource
 			if(resource == null){
 				resource = new Resource();
 				this.resources.push(resource);
-				resource.borrowed = true;
-				callback(resource);
+				
 			}
 
+			resource.borrowed = true;
+			callback(resource);
+
 		} else {
+			//check if there available resources from pool to borrow when pool has reach max count
 			for(var i=0; i<this.resources.length;i++){
 				if(this.resources[i].borrowed == false){
 					
@@ -57,7 +57,7 @@ class ResourceManager {
 					break;
 				}
 			}
-
+			
 			if(resource == null){
 				setTimeout( function() {
       				self.borrow(callback);
